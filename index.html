@@ -45,16 +45,17 @@
             padding: 15px 40px;
             font-size: 22px;
             cursor: pointer;
-            border: none;
+            border: 3px solid #ff1493;
             border-radius: 12px;
-            background-color: #ff1493;
-            color: white;
+            background-color: white;
+            color: black;
+            font-weight: bold;
             transition: transform 0.2s, box-shadow 0.2s;
             z-index: 10;
         }
         button:hover {
             transform: scale(1.15);
-            box-shadow: 0 0 15px #fff;
+            box-shadow: 0 0 20px #ff1493;
         }
         #yesBtn {
             position: relative;
@@ -129,7 +130,6 @@
         const noBtn = document.getElementById('noBtn');
         const valImage = document.getElementById('valImage');
         const messageOverlay = document.getElementById('messageOverlay');
-        const messageText = document.getElementById('messageText');
         const buttonsContainer = document.getElementById('buttonsContainer');
         
         let hasClicked = false;
@@ -174,7 +174,23 @@
 
         // Show message overlay
         function showMessage(msg) {
-            messageText.innerHTML = msg + ' ❤️💖';
+            // Clear previous content
+            messageOverlay.innerHTML = '';
+            
+            // Create message content
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.innerHTML = msg + ' ❤️💖';
+            messageOverlay.appendChild(messageContent);
+            
+            // Create close button
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'close-btn';
+            closeBtn.innerHTML = 'Close ❤️';
+            closeBtn.onclick = closeMessage;
+            messageOverlay.appendChild(closeBtn);
+            
+            // Show overlay
             messageOverlay.style.display = 'flex';
             
             // Create hearts in the overlay
@@ -197,7 +213,6 @@
         // Close message overlay
         function closeMessage() {
             messageOverlay.style.display = 'none';
-            messageOverlay.innerHTML = '<div class="message-content" id="messageText"></div><button class="close-btn" onclick="closeMessage()">Close ❤️</button>';
         }
 
         // Yes button click
