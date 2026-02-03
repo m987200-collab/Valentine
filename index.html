@@ -9,12 +9,12 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
-            background: #8b0000; /* dim red background */
+            background: #8b0000; /* dim red */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            height: 100vh;
+            min-height: 100vh;
             color: white;
         }
         h1 {
@@ -24,8 +24,8 @@
             text-align: center;
         }
         #valImage {
-            width: 80%;
-            max-width: 400px;
+            width: 70%;
+            max-width: 350px;
             border-radius: 20px;
             margin: 20px 0;
             box-shadow: 0 4px 25px rgba(255, 20, 147, 0.5);
@@ -80,17 +80,16 @@
         const yesBtn = document.getElementById('yesBtn');
         const noBtn = document.getElementById('noBtn');
         const valImage = document.getElementById('valImage');
-
         let autoTimeoutFired = false;
 
-        // Hearts animation around image
+        // Hearts around image
         function createHeart() {
             const heart = document.createElement('div');
             heart.className = 'heart';
             heart.innerText = '💖';
             const rect = valImage.getBoundingClientRect();
             heart.style.left = (rect.left + rect.width/2 + (Math.random()*100-50)) + 'px';
-            heart.style.top = (rect.top + (Math.random()*100-50)) + 'px';
+            heart.style.top = (rect.top + (Math.random()*50-25)) + 'px';
             document.body.appendChild(heart);
 
             let step = 0;
@@ -105,7 +104,7 @@
             }, 20);
         }
 
-        // Sparkles/love poppers on main page
+        // Sparkles / love poppers
         function createSparkle() {
             const sparkle = document.createElement('div');
             sparkle.style.position = 'absolute';
@@ -117,7 +116,7 @@
             setTimeout(()=>sparkle.remove(), 2000);
         }
 
-        // Function to open message page with effects
+        // Open new message page with hearts
         function openMessage(msg){
             const newWindow = window.open('', '_blank');
             newWindow.document.write(`
@@ -170,7 +169,7 @@
             newWindow.document.close();
         }
 
-        // Yes button click
+        // Yes click
         yesBtn.addEventListener('click', ()=>{
             for(let i=0;i<30;i++) setTimeout(createHeart,i*80);
             for(let i=0;i<40;i++) setTimeout(createSparkle,i*100);
@@ -184,16 +183,15 @@
             noBtn.style.left = x + 'px';
             noBtn.style.top = y + 'px';
         }
-
         noBtn.addEventListener('mouseover', moveNoButton);
         noBtn.addEventListener('touchstart', moveNoButton);
 
-        // No button click message
+        // No button click
         noBtn.addEventListener('click', ()=>{
             openMessage("Not even an option... Thank you for being my Valentine 🙈😘");
         });
 
-        // Auto open message after 15 sec
+        // Auto after 15 sec
         setTimeout(()=>{
             if(!autoTimeoutFired){
                 autoTimeoutFired = true;
@@ -201,7 +199,7 @@
                 for(let i=0;i<40;i++) setTimeout(createSparkle,i*100);
                 openMessage("Thank you so much for being my Valentine, I Love you so much");
             }
-        }, 15000);
+        },15000);
 
     </script>
 </body>
