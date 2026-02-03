@@ -2,56 +2,59 @@
 <html>
 <head>
     <title>Valentine Surprise</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
             margin: 0;
             padding: 0;
             overflow: hidden;
-            background: #ff4d6d; /* Red Valentine background */
-            position: relative;
+            background: #8b0000; /* dim red background */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            color: white;
         }
         h1 {
+            margin-top: 20px;
             color: #fff;
-            margin-top: 20px;
             text-shadow: 2px 2px #ff1493;
+            text-align: center;
         }
-        img {
-            width: 350px; /* Bigger image */
-            height: auto;
+        #valImage {
+            width: 80%;
+            max-width: 400px;
             border-radius: 20px;
-            margin-top: 20px;
+            margin: 20px 0;
             box-shadow: 0 4px 25px rgba(255, 20, 147, 0.5);
-            position: relative;
-            z-index: 10;
+        }
+        #buttonsContainer {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
         }
         button {
             padding: 12px 30px;
             font-size: 20px;
             cursor: pointer;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             background-color: #ff1493;
             color: white;
-            transition: transform 0.2s;
-            position: absolute;
-            z-index: 10;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
         }
-        button:hover {
-            transform: scale(1.1);
-        }
-        #yesBtn {
-            top: 500px;
-            left: 120px;
-        }
-        #noBtn {
-            top: 500px;
-            left: 300px;
+        button:hover, button:active {
+            transform: scale(1.15);
+            box-shadow: 0 0 15px #fff;
         }
         .heart {
             position: absolute;
-            font-size: 30px;
+            font-size: 28px;
             animation: bounce 0.5s ease;
             user-select: none;
         }
@@ -59,30 +62,19 @@
             0%,100%{transform:translateY(0);}
             50%{transform:translateY(-15px);}
         }
-        .sparkle {
-            position: absolute;
-            width: 5px;
-            height: 5px;
-            color: #fff;
-            animation: sparkle 2s infinite;
-            font-size: 24px;
-        }
-        @keyframes sparkle {
-            0% { transform: translateY(0) scale(1); opacity: 0.8; }
-            50% { transform: translateY(-20px) scale(1.5); opacity: 0.3; }
-            100% { transform: translateY(0) scale(1); opacity: 0.8; }
-        }
     </style>
 </head>
 <body>
     <h1>Will you be my Valentine? ❤️💖</h1>
 
-    <!-- Her Image -->
+    <!-- Image -->
     <img src="her.jpeg" alt="Her Image" id="valImage">
 
     <!-- Buttons -->
-    <button id="yesBtn">Yes ❤️</button>
-    <button id="noBtn">No 💔</button>
+    <div id="buttonsContainer">
+        <button id="yesBtn">Yes ❤️</button>
+        <button id="noBtn">No 💔</button>
+    </div>
 
     <script>
         const yesBtn = document.getElementById('yesBtn');
@@ -91,18 +83,19 @@
 
         let autoTimeoutFired = false;
 
-        // Hearts flying
+        // Hearts animation around image
         function createHeart() {
             const heart = document.createElement('div');
             heart.className = 'heart';
             heart.innerText = '💖';
-            heart.style.left = (valImage.offsetLeft + valImage.offsetWidth/2 + (Math.random()*80-40)) + 'px';
-            heart.style.top = (valImage.offsetTop - 20) + 'px';
+            const rect = valImage.getBoundingClientRect();
+            heart.style.left = (rect.left + rect.width/2 + (Math.random()*100-50)) + 'px';
+            heart.style.top = (rect.top + (Math.random()*100-50)) + 'px';
             document.body.appendChild(heart);
 
             let step = 0;
             const moveHeart = setInterval(() => {
-                heart.style.top = parseInt(heart.style.top) - 4 + 'px';
+                heart.style.top = parseInt(heart.style.top) - 2 + 'px';
                 heart.style.left = parseInt(heart.style.left) + Math.sin(step)*2 + 'px';
                 step += 0.2;
                 if(step > 80){
@@ -112,9 +105,11 @@
             }, 20);
         }
 
+        // Sparkles/love poppers on main page
         function createSparkle() {
             const sparkle = document.createElement('div');
-            sparkle.className = 'sparkle';
+            sparkle.style.position = 'absolute';
+            sparkle.style.fontSize = (20 + Math.random()*20) + 'px';
             sparkle.innerText = '❤️';
             sparkle.style.left = Math.random()*window.innerWidth + 'px';
             sparkle.style.top = Math.random()*window.innerHeight + 'px';
@@ -122,65 +117,92 @@
             setTimeout(()=>sparkle.remove(), 2000);
         }
 
-        // Open new page with message
+        // Function to open message page with effects
         function openMessage(msg){
             const newWindow = window.open('', '_blank');
             newWindow.document.write(`
                 <html>
                 <head>
-                    <title>Valentine Message</title>
-                    <style>
-                        body { 
-                            background: #ff4d6d; 
-                            color: white; 
-                            font-family: Arial, sans-serif;
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            height: 100vh;
-                            text-align: center;
-                            font-size: 28px;
-                        }
-                    </style>
+                <title>Valentine Message</title>
+                <style>
+                    body { 
+                        background: #8b0000; 
+                        color: white; 
+                        font-family: Arial, sans-serif;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100vh;
+                        text-align: center;
+                        font-size: 28px;
+                        overflow: hidden;
+                    }
+                    .heart {
+                        position: absolute;
+                        font-size: 24px;
+                        animation: float 3s ease-out forwards;
+                    }
+                    @keyframes float {
+                        0% { transform: translateY(0) scale(1); opacity: 1; }
+                        100% { transform: translateY(-400px) scale(1.5); opacity: 0; }
+                    }
+                </style>
                 </head>
                 <body>
                     ${msg} ❤️💖
+                    <script>
+                        function createHeart(){
+                            const heart = document.createElement('div');
+                            heart.className='heart';
+                            heart.innerText='💖';
+                            heart.style.left=Math.random()*window.innerWidth+'px';
+                            heart.style.top=Math.random()*window.innerHeight+'px';
+                            document.body.appendChild(heart);
+                            setTimeout(()=>heart.remove(),3000);
+                        }
+                        for(let i=0;i<50;i++){
+                            setTimeout(createHeart,i*100);
+                        }
+                    </script>
                 </body>
                 </html>
             `);
             newWindow.document.close();
         }
 
-        // Yes button
-        yesBtn.addEventListener('click', () => {
-            for(let i=0;i<25;i++) setTimeout(createHeart,i*100);
-            for(let i=0;i<50;i++) setTimeout(createSparkle,i*80);
+        // Yes button click
+        yesBtn.addEventListener('click', ()=>{
+            for(let i=0;i<30;i++) setTimeout(createHeart,i*80);
+            for(let i=0;i<40;i++) setTimeout(createSparkle,i*100);
             openMessage("Thank you so much for being my Valentine, I Love you so much");
         });
 
-        // No button
+        // No button movement
         function moveNoButton(){
             const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 100);
             noBtn.style.left = x + 'px';
             noBtn.style.top = y + 'px';
         }
+
         noBtn.addEventListener('mouseover', moveNoButton);
         noBtn.addEventListener('touchstart', moveNoButton);
 
-        noBtn.addEventListener('click', () => {
+        // No button click message
+        noBtn.addEventListener('click', ()=>{
             openMessage("Not even an option... Thank you for being my Valentine 🙈😘");
         });
 
-        // Auto message after 15 sec
+        // Auto open message after 15 sec
         setTimeout(()=>{
             if(!autoTimeoutFired){
                 autoTimeoutFired = true;
-                for(let i=0;i<25;i++) setTimeout(createHeart,i*100);
-                for(let i=0;i<50;i++) setTimeout(createSparkle,i*80);
+                for(let i=0;i<30;i++) setTimeout(createHeart,i*80);
+                for(let i=0;i<40;i++) setTimeout(createSparkle,i*100);
                 openMessage("Thank you so much for being my Valentine, I Love you so much");
             }
         }, 15000);
+
     </script>
 </body>
 </html>
