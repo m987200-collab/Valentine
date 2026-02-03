@@ -6,32 +6,45 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            margin-top: 100px;
+            margin: 0;
+            padding: 0;
             overflow: hidden;
             background: #fff0f5;
             position: relative;
         }
         h1 {
             color: #ff1493;
+            margin-top: 20px;
+        }
+        img {
+            width: 250px;
+            height: auto;
+            border-radius: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(255, 20, 147, 0.3);
+            position: relative;
+            z-index: 10;
         }
         button {
             padding: 12px 25px;
             font-size: 18px;
-            margin: 10px;
             cursor: pointer;
             border: none;
             border-radius: 8px;
             background-color: #ff69b4;
             color: white;
             transition: transform 0.2s;
-            position: relative;
+            position: absolute;
             z-index: 10;
         }
         button:hover {
             transform: scale(1.1);
         }
+        #yesBtn {
+            position: relative; /* Yes button stays in place */
+        }
         #message {
-            margin-top: 30px;
+            margin-top: 20px;
             font-size: 22px;
             color: #ff1493;
             font-weight: bold;
@@ -42,12 +55,8 @@
             position: absolute;
             font-size: 24px;
             color: pink;
-            animation: float 3s ease-out forwards, bounce 0.5s ease;
+            animation: bounce 0.5s ease;
             user-select: none;
-        }
-        @keyframes float {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-400px) scale(1.5); opacity: 0; }
         }
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
@@ -71,32 +80,61 @@
 </head>
 <body>
     <h1>Will you be my Valentine?</h1>
-    <button id="yesBtn" onclick="sayYes()">Yes</button>
-    <button onclick="sayNo()">No</button>
+
+    <!-- Use local image from repository -->
+    <img src="her.jpeg" alt="Her Image" id="valImage">
+
+    <!-- Buttons -->
+    <button id="yesBtn" style="top: 350px; left: 120px;">Yes</button>
+    <button id="noBtn" style="top: 350px; left: 250px;">No</button>
 
     <p id="message"></p>
 
     <script>
-        // Create floating hearts from the Yes button
-        function createHeart() {
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const valImage = document.getElementById('valImage');
+        const message = document.getElementById('message');
+
+        // Hearts moving in a spiral toward the image
+        function createHeartSpiral() {
             const heart = document.createElement('div');
             heart.className = 'heart';
             heart.innerText = '❤️';
 
-            const btn = document.getElementById('yesBtn');
-            const rect = btn.getBoundingClientRect();
-
-            // Start position at button
-            heart.style.left = (rect.left + rect.width / 2 + (Math.random()*40-20)) + 'px';
+            const rect = yesBtn.getBoundingClientRect();
+            heart.style.left = (rect.left + rect.width/2) + 'px';
             heart.style.top = (rect.top - 20) + 'px';
-            heart.style.fontSize = (20 + Math.random() * 30) + 'px';
 
             document.body.appendChild(heart);
 
-            setTimeout(() => heart.remove(), 3000);
+            const imgRect = valImage.getBoundingClientRect();
+            const imgCenterX = imgRect.left + imgRect.width/2;
+            const imgCenterY = imgRect.top + imgRect.height/2;
+
+            let angle = 0;
+            let radius = 100;
+            let posX = parseFloat(heart.style.left);
+            let posY = parseFloat(heart.style.top);
+            let step = 0;
+
+            const moveHeart = setInterval(() => {
+                angle += 0.2;
+                radius *= 0.95; // spiral in
+                posX += (imgCenterX - posX) * 0.05 + Math.sin(angle) * 2;
+                posY += (imgCenterY - posY) * 0.05 + Math.cos(angle) * 2;
+                heart.style.left = posX + 'px';
+                heart.style.top = posY + 'px';
+                step++;
+
+                if(step > 80) {
+                    heart.remove();
+                    clearInterval(moveHeart);
+                }
+            }, 20);
         }
 
-        // Create random background sparkles
+        // Background sparkles
         function createSparkle() {
             const sparkle = document.createElement('div');
             sparkle.className = 'sparkle';
@@ -109,25 +147,29 @@
             setTimeout(() => sparkle.remove(), 2000);
         }
 
-        function sayYes() {
-            document.getElementById("message").innerText = 
-                "Thank you for being my Valentine Love, I love you so much";
-
-            // Floating hearts
-            for (let i = 0; i < 25; i++) {
-                setTimeout(createHeart, i * 120);
+        // Yes button clicked
+        yesBtn.addEventListener('click', () => {
+            message.innerText = "Thank you for being my Valentine Love, I love you so much";
+            for(let i=0; i<25; i++){
+                setTimeout(createHeartSpiral, i*120);
             }
-
-            // Sparkles in the background
-            for (let i = 0; i < 50; i++) {
-                setTimeout(createSparkle, i * 100);
+            for(let i=0; i<50; i++){
+                setTimeout(createSparkle, i*100);
             }
-        }
+        });
 
-        function sayNo() {
-            document.getElementById("message").innerText = 
-                "Oh no! Maybe next time 😢";
-        }
+        // No button clicked
+        noBtn.addEventListener('click', () => {
+            message.innerText = "Oh no! Maybe next time 😢";
+        });
+
+        // No button moves randomly
+        noBtn.addEventListener('mouseover', () => {
+            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+            noBtn.style.left = x + 'px';
+            noBtn.style.top = y + 'px';
+        });
     </script>
 </body>
 </html>
