@@ -8,12 +8,11 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            overflow: hidden;
             background: #8b0000;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: center;
             min-height: 100vh;
             color: white;
         }
@@ -22,10 +21,11 @@
             color: #fff;
             text-shadow: 2px 2px #ff1493;
             text-align: center;
+            padding: 0 20px;
         }
         #valImage {
-            width: 60%;
-            max-width: 300px;
+            width: 40%;
+            max-width: 200px;
             border-radius: 20px;
             margin: 20px 0;
             box-shadow: 0 4px 25px rgba(255, 20, 147, 0.5);
@@ -33,16 +33,17 @@
         #buttonsContainer {
             display: flex;
             justify-content: center;
-            gap: 30px;
+            gap: 40px;
+            margin-top: 30px;
             margin-bottom: 50px;
-            flex-wrap: wrap;
             position: relative;
             width: 100%;
-            height: 200px;
+            min-height: 80px;
+            align-items: center;
         }
         button {
-            padding: 12px 30px;
-            font-size: 20px;
+            padding: 15px 40px;
+            font-size: 22px;
             cursor: pointer;
             border: none;
             border-radius: 12px;
@@ -51,7 +52,7 @@
             transition: transform 0.2s, box-shadow 0.2s;
             z-index: 10;
         }
-        button:hover, button:active {
+        button:hover {
             transform: scale(1.15);
             box-shadow: 0 0 15px #fff;
         }
@@ -59,7 +60,7 @@
             position: relative;
         }
         #noBtn {
-            position: absolute;
+            position: relative;
         }
         .heart {
             position: fixed;
@@ -79,7 +80,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(139, 0, 0, 0.95);
+            background: rgba(139, 0, 0, 0.97);
             display: none;
             justify-content: center;
             align-items: center;
@@ -87,21 +88,23 @@
             flex-direction: column;
         }
         .message-content {
-            font-size: 28px;
+            font-size: 32px;
             text-align: center;
             padding: 40px;
             color: white;
             max-width: 80%;
+            line-height: 1.5;
         }
         .close-btn {
             margin-top: 30px;
-            padding: 10px 30px;
+            padding: 12px 35px;
             background: #ff1493;
             border: none;
             border-radius: 10px;
             color: white;
-            font-size: 18px;
+            font-size: 20px;
             cursor: pointer;
+            transition: transform 0.2s;
         }
         .close-btn:hover {
             transform: scale(1.1);
@@ -128,13 +131,8 @@
         const messageOverlay = document.getElementById('messageOverlay');
         const messageText = document.getElementById('messageText');
         const buttonsContainer = document.getElementById('buttonsContainer');
-
-        // Position No button initially
-        window.addEventListener('load', () => {
-            const containerRect = buttonsContainer.getBoundingClientRect();
-            noBtn.style.left = (containerRect.width / 2 + 50) + 'px';
-            noBtn.style.top = '20px';
-        });
+        
+        let hasClicked = false;
 
         // Hearts animation
         function createHeart() {
@@ -204,6 +202,7 @@
 
         // Yes button click
         yesBtn.addEventListener('click', ()=>{
+            hasClicked = true;
             for(let i=0;i<30;i++) setTimeout(createHeart,i*80);
             for(let i=0;i<40;i++) setTimeout(createSparkle,i*100);
             setTimeout(() => {
@@ -211,41 +210,59 @@
             }, 500);
         });
 
-        // No button movement
+        // No button movement - make it run away!
         function moveNoButton(e) {
             e.preventDefault();
-            const containerRect = buttonsContainer.getBoundingClientRect();
-            const maxX = containerRect.width - noBtn.offsetWidth;
-            const maxY = containerRect.height - noBtn.offsetHeight;
             
-            const x = Math.random() * maxX;
-            const y = Math.random() * maxY;
+            // Get button and window dimensions
+            const buttonRect = noBtn.getBoundingClientRect();
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
             
-            noBtn.style.left = x + 'px';
-            noBtn.style.top = y + 'px';
+            // Calculate safe boundaries
+            const maxX = windowWidth - buttonRect.width - 20;
+            const maxY = windowHeight - buttonRect.height - 20;
+            
+            // Generate random position
+            let newX = Math.random() * maxX;
+            let newY = Math.random() * maxY;
+            
+            // Make sure it's far from current position
+            const currentX = buttonRect.left;
+            const currentY = buttonRect.top;
+            
+            // If new position is too close, try again
+            if(Math.abs(newX - currentX) < 100 || Math.abs(newY - currentY) < 100) {
+                newX = (newX + windowWidth/2) % maxX;
+                newY = (newY + windowHeight/2) % maxY;
+            }
+            
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = newX + 'px';
+            noBtn.style.top = newY + 'px';
         }
 
         noBtn.addEventListener('mouseenter', moveNoButton);
         noBtn.addEventListener('touchstart', moveNoButton);
+        noBtn.addEventListener('mouseover', moveNoButton);
 
-        // No button click (if they manage to click it)
+        // No button click - same message as Yes
         noBtn.addEventListener('click', (e)=>{
             e.preventDefault();
-            for(let i=0;i<30;i++) setTimeout(createHeart,i*80);
-            for(let i=0;i<40;i++) setTimeout(createSparkle,i*100);
-            setTimeout(() => {
-                showMessage("Not even an option... Thank you for being my Valentine 🙈😘");
-            }, 500);
-        });
-
-        // Auto message after 12 sec
-        setTimeout(()=>{
+            hasClicked = true;
             for(let i=0;i<30;i++) setTimeout(createHeart,i*80);
             for(let i=0;i<40;i++) setTimeout(createSparkle,i*100);
             setTimeout(() => {
                 showMessage("Thank you so much for being my Valentine, I Love you so much");
             }, 500);
-        }, 12000);
+        });
+
+        // Auto message after 20 seconds if she hasn't clicked Yes
+        setTimeout(()=>{
+            if(!hasClicked) {
+                showMessage("Don't even think about clicking NO, It's not an option, Click YES");
+            }
+        }, 20000);
     </script>
 </body>
 </html>
