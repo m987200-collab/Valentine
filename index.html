@@ -41,7 +41,12 @@
             transform: scale(1.1);
         }
         #yesBtn {
-            position: relative; /* Yes button stays in place */
+            left: 120px;
+            top: 350px;
+        }
+        #noBtn {
+            left: 250px;
+            top: 350px;
         }
         #message {
             margin-top: 20px;
@@ -81,12 +86,12 @@
 <body>
     <h1>Will you be my Valentine?</h1>
 
-    <!-- Use local image from repository -->
+    <!-- Her image -->
     <img src="her.jpeg" alt="Her Image" id="valImage">
 
     <!-- Buttons -->
-    <button id="yesBtn" style="top: 350px; left: 120px;">Yes</button>
-    <button id="noBtn" style="top: 350px; left: 250px;">No</button>
+    <button id="yesBtn">Yes</button>
+    <button id="noBtn">No</button>
 
     <p id="message"></p>
 
@@ -96,7 +101,9 @@
         const valImage = document.getElementById('valImage');
         const message = document.getElementById('message');
 
-        // Hearts moving in a spiral toward the image
+        let autoTimeoutFired = false;
+
+        // Hearts spiraling toward image
         function createHeartSpiral() {
             const heart = document.createElement('div');
             heart.className = 'heart';
@@ -113,16 +120,14 @@
             const imgCenterY = imgRect.top + imgRect.height/2;
 
             let angle = 0;
-            let radius = 100;
             let posX = parseFloat(heart.style.left);
             let posY = parseFloat(heart.style.top);
             let step = 0;
 
             const moveHeart = setInterval(() => {
                 angle += 0.2;
-                radius *= 0.95; // spiral in
-                posX += (imgCenterX - posX) * 0.05 + Math.sin(angle) * 2;
-                posY += (imgCenterY - posY) * 0.05 + Math.cos(angle) * 2;
+                posX += (imgCenterX - posX) * 0.07 + Math.sin(angle) * 2;
+                posY += (imgCenterY - posY) * 0.07 + Math.cos(angle) * 2;
                 heart.style.left = posX + 'px';
                 heart.style.top = posY + 'px';
                 step++;
@@ -134,7 +139,7 @@
             }, 20);
         }
 
-        // Background sparkles
+        // Sparkles in background
         function createSparkle() {
             const sparkle = document.createElement('div');
             sparkle.className = 'sparkle';
@@ -143,33 +148,46 @@
             sparkle.style.width = (2 + Math.random() * 4) + 'px';
             sparkle.style.height = (2 + Math.random() * 4) + 'px';
             document.body.appendChild(sparkle);
-
             setTimeout(() => sparkle.remove(), 2000);
         }
 
-        // Yes button clicked
-        yesBtn.addEventListener('click', () => {
-            message.innerText = "Thank you for being my Valentine Love, I love you so much";
-            for(let i=0; i<25; i++){
-                setTimeout(createHeartSpiral, i*120);
+        // Show Valentine message
+        function sayYes() {
+            message.innerText = "Thank you so much for being my Valentine, I Love you so much";
+            for(let i=0;i<25;i++){
+                setTimeout(createHeartSpiral,i*120);
             }
-            for(let i=0; i<50; i++){
-                setTimeout(createSparkle, i*100);
+            for(let i=0;i<50;i++){
+                setTimeout(createSparkle,i*100);
             }
-        });
+        }
 
-        // No button clicked
-        noBtn.addEventListener('click', () => {
-            message.innerText = "Oh no! Maybe next time 😢";
-        });
+        yesBtn.addEventListener('click', sayYes);
 
-        // No button moves randomly
-        noBtn.addEventListener('mouseover', () => {
+        // Move No button faster
+        function moveNoButton() {
             const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
             const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
             noBtn.style.left = x + 'px';
             noBtn.style.top = y + 'px';
+        }
+
+        // No button interaction
+        noBtn.addEventListener('mouseover', moveNoButton);
+        noBtn.addEventListener('touchstart', moveNoButton);
+
+        noBtn.addEventListener('click', () => {
+            // Even if clicked, playful message
+            message.innerText = "Not even an option... Thank you for being my Valentine 🙈😘";
         });
+
+        // Auto trigger after 10 seconds
+        setTimeout(() => {
+            if(!autoTimeoutFired){
+                autoTimeoutFired = true;
+                sayYes();
+            }
+        }, 10000);
     </script>
 </body>
 </html>
