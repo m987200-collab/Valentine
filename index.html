@@ -9,7 +9,7 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
-            background: #8b0000; /* dim red */
+            background: #8b0000;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -25,7 +25,7 @@
         }
         #valImage {
             width: 60%;
-            max-width: 300px; /* smaller image so buttons fit */
+            max-width: 300px;
             border-radius: 20px;
             margin: 20px 0;
             box-shadow: 0 4px 25px rgba(255, 20, 147, 0.5);
@@ -34,8 +34,9 @@
             display: flex;
             justify-content: center;
             gap: 30px;
-            margin-bottom: 50px; /* ensure above taskbar */
+            margin-bottom: 50px;
             flex-wrap: wrap;
+            position: relative;
         }
         button {
             padding: 12px 30px;
@@ -67,11 +68,7 @@
 </head>
 <body>
     <h1>Will you be my Valentine? ❤️💖</h1>
-
-    <!-- Image -->
     <img src="her.jpeg" alt="Her Image" id="valImage">
-
-    <!-- Buttons -->
     <div id="buttonsContainer">
         <button id="yesBtn">Yes ❤️</button>
         <button id="noBtn">No 💔</button>
@@ -81,9 +78,8 @@
         const yesBtn = document.getElementById('yesBtn');
         const noBtn = document.getElementById('noBtn');
         const valImage = document.getElementById('valImage');
-        let autoTimeoutFired = false;
 
-        // Hearts animation around image
+        // Hearts animation
         function createHeart() {
             const heart = document.createElement('div');
             heart.className = 'heart';
@@ -105,7 +101,7 @@
             }, 20);
         }
 
-        // Sparkles / love poppers on main page
+        // Sparkles
         function createSparkle() {
             const sparkle = document.createElement('div');
             sparkle.style.position = 'absolute';
@@ -117,62 +113,27 @@
             setTimeout(()=>sparkle.remove(), 2000);
         }
 
-        // Open new tab with message and hearts
-        function openMessage(msg){
-            const newWindow = window.open('', '_blank');
-            if(newWindow) {
-                newWindow.document.write(`
-                    <html>
-                    <head>
-                    <title>Valentine Message</title>
-                    <style>
-                        body { 
-                            background: #8b0000; 
-                            color: white; 
-                            font-family: Arial, sans-serif;
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            height: 100vh;
-                            text-align: center;
-                            font-size: 28px;
-                            overflow: hidden;
+        // Open message page
+        function openMessage(msg, newTab=true){
+            if(newTab){
+                const w = window.open('', '_blank');
+                if(w){
+                    w.document.write(`<html><head><title>Valentine Message</title></head><body style="background:#8b0000;color:white;font-family:Arial,sans-serif;text-align:center;font-size:28px;">
+                    ${msg} ❤️💖
+                    <script>
+                        for(let i=0;i<50;i++){
+                            setTimeout(()=>{const h=document.createElement('div');h.innerText='💖';h.style.position='absolute';h.style.left=Math.random()*window.innerWidth+'px';h.style.top=Math.random()*window.innerHeight+'px';h.style.fontSize='24px';document.body.appendChild(h);setTimeout(()=>h.remove(),3000);},i*100);
                         }
-                        .heart {
-                            position: absolute;
-                            font-size: 24px;
-                            animation: float 3s ease-out forwards;
-                        }
-                        @keyframes float {
-                            0% { transform: translateY(0) scale(1); opacity: 1; }
-                            100% { transform: translateY(-400px) scale(1.5); opacity: 0; }
-                        }
-                    </style>
-                    </head>
-                    <body>
-                        ${msg} ❤️💖
-                        <script>
-                            function createHeart(){
-                                const heart = document.createElement('div');
-                                heart.className='heart';
-                                heart.innerText='💖';
-                                heart.style.left=Math.random()*window.innerWidth+'px';
-                                heart.style.top=Math.random()*window.innerHeight+'px';
-                                document.body.appendChild(heart);
-                                setTimeout(()=>heart.remove(),3000);
-                            }
-                            for(let i=0;i<50;i++){
-                                setTimeout(createHeart,i*100);
-                            }
-                        </script>
-                    </body>
-                    </html>
-                `);
-                newWindow.document.close();
+                    </script>
+                    </body></html>`);
+                    w.document.close();
+                }
+            } else {
+                alert(msg); // fallback if browser blocks popups
             }
         }
 
-        // Yes button
+        // Yes button click
         yesBtn.addEventListener('click', ()=>{
             for(let i=0;i<30;i++) setTimeout(createHeart,i*80);
             for(let i=0;i<40;i++) setTimeout(createSparkle,i*100);
@@ -196,14 +157,10 @@
 
         // Auto message after 12 sec
         setTimeout(()=>{
-            if(!autoTimeoutFired){
-                autoTimeoutFired = true;
-                for(let i=0;i<30;i++) setTimeout(createHeart,i*80);
-                for(let i=0;i<40;i++) setTimeout(createSparkle,i*100);
-                openMessage("Thank you so much for being my Valentine, I Love you so much");
-            }
+            for(let i=0;i<30;i++) setTimeout(createHeart,i*80);
+            for(let i=0;i<40;i++) setTimeout(createSparkle,i*100);
+            openMessage("Thank you so much for being my Valentine, I Love you so much", false);
         },12000);
-
     </script>
 </body>
 </html>
